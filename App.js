@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Text,
   StyleSheet,
@@ -15,9 +15,27 @@ import Formulario from './components/formulario';
 import AsyncStorage from '@react-native-community/async-storage';
 
 const App = () => {
+
   const [mostrarForm, setMostrarForm] = useState(false);
+
   // Definir el state de citas
   const [citas, setCitas] = useState([]);
+
+  useEffect(() => {
+    const obtenerCitasStorage = async () => {
+      try {
+        const citasStorage = await AsyncStorage.getItem('citas');
+        if(citasStorage){
+          setCitas(JSON.parse(citasStorage)); // Parsear el string a un array
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    obtenerCitasStorage();
+  }, [])
+
+  
 
   // Elimina los pacientes del state
   const eliminarPaciente = id => {
