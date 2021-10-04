@@ -12,15 +12,12 @@ import {
 } from 'react-native';
 import Cita from './components/cita';
 import Formulario from './components/formulario';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const App = () => {
   const [mostrarForm, setMostrarForm] = useState(false);
   // Definir el state de citas
-  const [citas, setCitas] = useState([
-    {id: '1', paciente: 'Hook', propietario: 'Juan', sintomas: 'No come'},
-    {id: '2', paciente: 'Redux', propietario: 'Itzel', sintomas: 'No duerme'},
-    {id: '3', paciente: 'Native', propietario: 'Josue', sintomas: 'No canta'},
-  ]);
+  const [citas, setCitas] = useState([]);
 
   // Elimina los pacientes del state
   const eliminarPaciente = id => {
@@ -37,7 +34,17 @@ const App = () => {
   // Ocultar teclado
   const cerrarTeclado = () => {
     Keyboard.dismiss();
-  }
+  };
+
+  // Almacenar en el async storage
+  const guardarCitasStorage = async (citasJSON) => {
+    try {
+      await AsyncStorage.setItem('citas', citasJSON);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <TouchableWithoutFeedback onPress={() => cerrarTeclado()}>
       <View style={styles.contenedor}>
@@ -46,7 +53,9 @@ const App = () => {
           <TouchableHighlight
             onPress={() => mostrarFormulario()}
             style={styles.btnMostrarForm}>
-            <Text style={styles.textoMostrarForm}>{mostrarForm ? 'CANCELAR CREAR CITA' : 'CREAR NUEVA CITA'}</Text>
+            <Text style={styles.textoMostrarForm}>
+              {mostrarForm ? 'CANCELAR CREAR CITA' : 'CREAR NUEVA CITA'}
+            </Text>
           </TouchableHighlight>
         </View>
         <View style={styles.contenido}>
@@ -57,6 +66,7 @@ const App = () => {
                 citas={citas}
                 setCitas={setCitas}
                 setMostrarForm={setMostrarForm}
+                guardarCitasStorage={guardarCitasStorage}
               />
             </>
           ) : (
